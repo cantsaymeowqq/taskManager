@@ -1,0 +1,60 @@
+
+{% extends 'todoapp/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Чтобы добавить кнопку-стрелку  -->
+<div id="page-content">
+    <a id="scroll-to-top" href="#">
+        <i class="angle double up icon"></i>
+    </a>
+
+    <div style="margin-top: 30px; background-color: azure;" class="ui container">
+        <h1 class="ui center aligned header h1">Менеджер задач</h1>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+        </ul>
+        {% endif %}
+        <form class="ui form" action="{% url 'add' %}" method="post">
+            {% csrf_token %}
+            <div class="field">
+                <div class="field-input">
+                    <input type="text" name="title" placeholder="Название задачи">
+                </div>
+                <div class="field-button">
+                    <button class="ui teal basic button" type="submit">Добавить</button>
+                </div>
+            </div>
+        </form>
+
+        {% for todo in todo_list %}
+        <div class="ui segment">
+            <p class="ui big" style="overflow: hidden; text-overflow: ellipsis; display: inline-block;">№{{ todo.id }} {{ todo.title }}</p>
+
+
+            <form method="post" action="{% url 'delete' todo_id=todo.id %}">
+                {% csrf_token %}
+                {% if todo.is_complete == False %}
+                <span class="ui gray label">Не завершено</span>
+                <a class="ui primary basic button" href="{% url 'update' todo_id=todo.id %}">Закрыть</a>
+                {% else %}
+                <span class="ui green label">Завершено</span>
+                <a class="ui blue button" href="{% url 'update' todo_id=todo.id %}">Открыть</a>
+                {% endif %}
+                <button class="ui negative basic button" type="submit">Удалить</button>
+            </form>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<script src="{% static 'todolist/js/scripts.js' %}"></script>
+
+{% endblock content %}
